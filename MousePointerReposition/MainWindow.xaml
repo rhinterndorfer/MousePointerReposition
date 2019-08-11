@@ -1,0 +1,102 @@
+﻿<metro:MetroWindow x:Class="MousePointerReposition.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:local="clr-namespace:MousePointerReposition"
+        mc:Ignorable="d"
+        Closed="Window_Closed"
+        Title="Mouse Pointer Reposition" 
+        Height="480" 
+        Width="640" 
+        WindowState="{Binding WindowState}"
+        ShowInTaskbar="{Binding ShowInTaskbar}">
+    <Window.DataContext>
+        <local:MainWindowVM />
+    </Window.DataContext>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding Path=Loaded}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid>
+        <TabControl>
+            <TabItem Header="Settings">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <metro:ToggleSwitch Grid.Row="0" Grid.Column="0" Margin="5" Header="Autostart" IsChecked="{Binding Autostart}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="20 5 5 5" TextWrapping="Wrap" Text="Adds this programm to autostart in registry (HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run)." />
+
+                    <metro:ToggleSwitch Grid.Row="1" Grid.Column="0" Margin="5" Header="Disable ALT+TAB" IsChecked="{Binding DisableAltTab}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Margin="20 5 5 5" TextWrapping="Wrap" Text="Do not move mouse to center of active application window when switching applications with Alt+Tab key combination." />
+
+                    <metro:ToggleSwitch Grid.Row="2" Grid.Column="0" Margin="5" Header="Disable WIN+LEFT or RIGHT" IsChecked="{Binding DisableWinLeftRight}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Margin="20 5 5 5" TextWrapping="Wrap" Text="Do not move mouse to center of active application window when moving windows between screens with Win+Left or Right key combination." />
+
+                    <metro:ToggleSwitch Grid.Row="3" Grid.Column="0" Margin="5" Header="Disable 2x CTRL" IsChecked="{Binding DisableManuelPositioning}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Margin="20 5 5 5" TextWrapping="Wrap" Text="Do not move mouse to center of active application window when pressing Ctrl key twice." />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Credits">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Margin="5"
+                               Text="FMUtils.KeyboardHook" />
+                    <TextBlock Grid.Row="0" Grid.Column="1"
+                               Margin="5"
+                               TextWrapping="Wrap" 
+                               Text="https://github.com/factormystic/FMUtils.KeyboardHook" />
+                    <TextBlock Grid.Row="0" Grid.Column="2"
+                               Margin="5"
+                               TextWrapping="Wrap" 
+                               Text="License: https://github.com/factormystic/FMUtils.KeyboardHook/blob/master/license.txt" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0"
+                               Margin="5"
+                               Text="Vanara" />
+                    <TextBlock Grid.Row="1" Grid.Column="1"
+                               Margin="5"
+                               TextWrapping="Wrap" 
+                               Text="https://github.com/dahall/vanara" />
+                    <TextBlock Grid.Row="1" Grid.Column="2"
+                               Margin="5"
+                               TextWrapping="Wrap" 
+                               Text="License: https://github.com/dahall/Vanara/blob/master/LICENSE" />
+
+                    <TextBlock Grid.Row="2" Grid.Column="0"
+                               Margin="5"
+                               Text="MahApps.Metro" />
+                    <TextBlock Grid.Row="2" Grid.Column="1"
+                               Margin="5"
+                               TextWrapping="Wrap" 
+                               Text="https://github.com/MahApps/MahApps.Metro" />
+                    <TextBlock Grid.Row="2" Grid.Column="2"
+                               Margin="5"
+                               TextWrapping="Wrap" 
+                               Text="License: https://github.com/MahApps/MahApps.Metro/blob/develop/LICENSE" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</metro:MetroWindow>
