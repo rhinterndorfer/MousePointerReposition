@@ -24,20 +24,12 @@ namespace MousePointerReposition
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-
-
-
         /// <summary>
         /// .ctor
         /// </summary>
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        private void Window_Closed(object sender, EventArgs e)
-        { 
-            (DataContext as MainWindowVM)?.Window_Closed(sender, e);
         }
     }
 }

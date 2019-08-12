@@ -7,7 +7,6 @@
         xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:MousePointerReposition"
         mc:Ignorable="d"
-        Closed="Window_Closed"
         Title="Mouse Pointer Reposition" 
         Height="480" 
         Width="640" 
@@ -19,6 +18,9 @@
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding Path=Loaded}" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding Path=Closing}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>

@@ -14,21 +14,38 @@ namespace MousePointerReposition
 {
     public class MainWindowVM : INotifyPropertyChanged
     {
+        #region constants
+        
+        /// <summary>
+        /// Timeout waiting for new foreground application 
+        /// </summary>
         private const double CHECK_TIMEOUT = 5000; // ms
+
+        /// <summary>
+        /// Period for detecting multiple CTRL key pressing
+        /// </summary>
         private const long CTRL_KEY_TIMEOUT = 1000; // ms
 
+        #endregion constants
 
+
+        #region fields
+        
         private Vanara.PInvoke.RECT foreGroundWindowRectStart;
         private WindowState windowState;
         private bool showInTaskbar;
         private RelayCommand loaded;
+        private RelayCommand closing;
         private bool? autostart;
         private bool? disableAltTab;
         private bool? disableWinLeftRight;
         private bool? disableManualReposition;
-
         public event PropertyChangedEventHandler PropertyChanged;
+        
+        #endregion fields
 
+
+        #region private properties
 
         private NotifyIcon NotifyIcon { get; set; }
         private Hook KeyboardHook { get; set; }
@@ -39,7 +56,14 @@ namespace MousePointerReposition
         private DateTime CtrlKeyPressLast { get; set; }
         private System.Timers.Timer RepositioningTimer { get; set; }
 
+        #endregion private properties
 
+
+        #region public properties
+
+        /// <summary>
+        /// Window loaded command
+        /// </summary>
         public RelayCommand Loaded
         {
             get
@@ -50,7 +74,22 @@ namespace MousePointerReposition
             }
         }
 
+        /// <summary>
+        /// Window closing command
+        /// </summary>
+        public RelayCommand Closing
+        {
+            get
+            {
+                if (closing == null)
+                    closing = new RelayCommand(OnClosing);
+                return closing;
+            }
+        }
 
+        /// <summary>
+        /// Window state
+        /// </summary>
         public WindowState WindowState
         {
             get => windowState;
@@ -61,6 +100,9 @@ namespace MousePointerReposition
             }
         }
 
+        /// <summary>
+        /// Show in taskbar
+        /// </summary>
         public bool ShowInTaskbar
         {
             get => showInTaskbar;
@@ -71,8 +113,9 @@ namespace MousePointerReposition
             }
         }
 
-
-
+        /// <summary>
+        /// Autostart
+        /// </summary>
         public bool Autostart
         {
             get
@@ -89,6 +132,9 @@ namespace MousePointerReposition
             }
         }
 
+        /// <summary>
+        ///  Disable ALT+TAB key combination
+        /// </summary>
         public bool DisableAltTab
         {
             get
@@ -105,6 +151,9 @@ namespace MousePointerReposition
             }
         }
 
+        /// <summary>
+        ///  Disable WIN+LEFT or RIGHT key combination
+        /// </summary>
         public bool DisableWinLeftRight
         {
             get
@@ -122,6 +171,9 @@ namespace MousePointerReposition
 
         }
 
+        /// <summary>
+        /// Disable manual cursor repositioning (2x CTRL key)
+        /// </summary>
         public bool DisableManuelPositioning
         {
             get
@@ -138,7 +190,10 @@ namespace MousePointerReposition
             }
         }
 
+        #endregion public properties
 
+
+        #region .ctor
 
         /// <summary>
         /// .ctor
@@ -159,7 +214,14 @@ namespace MousePointerReposition
             KeyboardHook.KeyDownEvent += KeyDownHook;
         }
 
+        #endregion .ctor
 
+
+        #region private methods
+        /// <summary>
+        /// Window on load
+        /// </summary>
+        /// <param name="state"></param>
         private void OnLoaded(object state)
         {
             // notifyIcon
@@ -180,6 +242,21 @@ namespace MousePointerReposition
                 System.Windows.Threading.DispatcherPriority.Background);
         }
 
+        /// <summary>
+        /// Window in closing
+        /// </summary>
+        /// <param name="state"></param>
+        private void OnClosing(object state)
+        {
+            NotifyIcon.Visible = false;
+        }
+
+
+        /// <summary>
+        /// Retries to move the mouse cursor to the center of a new active application window for a specific amount of time (CHECK_TIMEOUT).
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RepositioningTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             CheckPeriod += RepositioningTimer.Interval;
@@ -193,7 +270,11 @@ namespace MousePointerReposition
             }
         }
 
-
+        /// <summary>
+        /// Open main window when notification icon is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NotifyIcon_Click(object sender, EventArgs e)
         {
             if (WindowState != WindowState.Minimized)
@@ -209,6 +290,10 @@ namespace MousePointerReposition
         }
 
 
+        /// <summary>
+        /// Keyboard key down event handler method
+        /// </summary>
+        /// <param name="e"></param>
         private void KeyDownHook(KeyboardHookEventArgs e)
         {
             // win + shift + left or right key
@@ -254,7 +339,10 @@ namespace MousePointerReposition
             }
         }
 
-
+        /// <summary>
+        /// Keyboard key up event handler method
+        /// </summary>
+        /// <param name="e"></param>
         private void KeyUpHook(KeyboardHookEventArgs e)
         {
             // alt + tap
@@ -283,6 +371,11 @@ namespace MousePointerReposition
             }
         }
 
+
+        /// <summary>
+        /// Called when key combination for cursor repositioning is detected.
+        /// Stores current foreground window geometry.
+        /// </summary>
         private void TriggerMousePositioning()
         {
             IsMousePositioningTriggered = true;
@@ -293,6 +386,10 @@ namespace MousePointerReposition
             Vanara.PInvoke.User32_Gdi.GetWindowRect(foregroundWindowHandleStart, out foreGroundWindowRectStart);
         }
 
+
+        /// <summary>
+        /// Start timer for trying cursor repositining to a new foreground application window.
+        /// </summary>
         private void ExecuteMousePositioning()
         {
             IsMousePositioningTriggered = false;
@@ -302,6 +399,14 @@ namespace MousePointerReposition
             RepositioningTimer.Start();
         }
 
+
+        /// <summary>
+        /// Try to move cursor to the center of a new foreground application window.
+        /// The active foreground window is compared with the active window before pressing the triggering key combinations.
+        /// If the active foreground window has changed the mouse cursor is only repositioned 
+        /// if the current cursor location is not already within the foreground window rectangle.
+        /// </summary>
+        /// <returns></returns>
         private bool TryMouseRepositioning()
         {
             // get foreground window
@@ -342,11 +447,10 @@ namespace MousePointerReposition
                 return false;
         }
 
-        internal void Window_Closed(object sender, EventArgs e)
-        {
-            NotifyIcon.Visible = false;
-        }
+        #endregion private methods
 
+
+        #region INotifyPropertyChanged
         /// <summary>
         /// Raises this object's PropertyChanged event.
         /// </summary>
@@ -359,7 +463,7 @@ namespace MousePointerReposition
                 PropertyChanged(this, e);
             }
         }
-
+        #endregion INotifyPropertyChanged
     }
 
 }

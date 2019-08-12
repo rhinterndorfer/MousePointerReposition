@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("MousePointerReposition")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("rammelhof.at")]
 [assembly: AssemblyProduct("MousePointerReposition")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCopyright("Copyright © rammelhof.at 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
