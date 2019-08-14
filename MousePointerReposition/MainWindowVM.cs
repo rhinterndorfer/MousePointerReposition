@@ -16,7 +16,7 @@ namespace MousePointerReposition
     public class MainWindowVM : INotifyPropertyChanged
     {
         #region constants
-        
+
         /// <summary>
         /// Timeout waiting for new foreground application 
         /// </summary>
@@ -31,18 +31,20 @@ namespace MousePointerReposition
 
 
         #region fields
-        
+
         private Vanara.PInvoke.RECT foreGroundWindowRectStart;
         private WindowState windowState;
         private bool showInTaskbar;
+        private bool autostart;
         private RelayCommand loaded;
         private RelayCommand closing;
-        private bool? autostart;
         private bool? disableAltTab;
         private bool? disableWinLeftRight;
         private bool? disableManualReposition;
+        private bool autoStartDisabled;
+
         public event PropertyChangedEventHandler PropertyChanged;
-        
+
         #endregion fields
 
 
@@ -114,14 +116,14 @@ namespace MousePointerReposition
             }
         }
 
+
+
         public bool AutoStartDisabled
         {
-            get
+            get => autoStartDisabled; set
             {
-                
-                // var startupTask = Windows.ApplicationModel.StartupTask.GetAsync("MousePointerRepositionStartupTask").AsTask();
-                
-                return false;
+                autoStartDisabled = value;
+                OnPropertyChanged(nameof(AutoStartDisabled));
             }
         }
 
@@ -132,15 +134,26 @@ namespace MousePointerReposition
         {
             get
             {
-                if (!autostart.HasValue)
-                    autostart = SettingsHelper.Instance.Autostart;
-                return autostart ?? false;
+                return autostart;
             }
             set
             {
-                autostart = value;
-                SettingsHelper.Instance.Autostart = value;
-                OnPropertyChanged(nameof(Autostart));
+                if (autostart != value) // value changed
+                {
+                    autostart = value;
+
+                    var startupTask = GetStartupTask();
+                    if (value)
+                    {
+                        var task = startupTask.RequestEnableAsync().AsTask();
+                        task.Wait();
+                        SetAutostartState(task.Result);
+                    }
+                    else
+                        startupTask.Disable();
+
+                    OnPropertyChanged(nameof(Autostart));
+                }
             }
         }
 
@@ -224,6 +237,10 @@ namespace MousePointerReposition
             KeyboardHook = new Hook("Global Keyboard Hook");
             KeyboardHook.KeyUpEvent += KeyUpHook;
             KeyboardHook.KeyDownEvent += KeyDownHook;
+
+            // check autostart task state
+            AutoStartDisabled = true;
+            RefreshAutostartState();
         }
 
         #endregion .ctor
@@ -250,7 +267,7 @@ namespace MousePointerReposition
                 new Action(() =>
                     {
                         ShowInTaskbar = false;
-                    }), 
+                    }),
                 System.Windows.Threading.DispatcherPriority.Background);
         }
 
@@ -457,6 +474,53 @@ namespace MousePointerReposition
             }
             else
                 return false;
+        }
+
+
+        /// <summary>
+        /// Get windows universal app startup task.
+        /// </summary>
+        /// <returns></returns>
+        private Windows.ApplicationModel.StartupTask GetStartupTask()
+        {
+            var task = Windows.ApplicationModel.StartupTask.GetAsync("MousePointerRepositionStartupTask").AsTask();
+            task.Wait();
+            return task.Result;
+        }
+
+        /// <summary>
+        /// Get windows universal app startup task.
+        /// </summary>
+        private void GetStartupTaskAndContinue(Action<Task<Windows.ApplicationModel.StartupTask>> action)
+        {
+            var task = Windows.ApplicationModel.StartupTask.GetAsync("MousePointerRepositionStartupTask").AsTask();
+            task.ContinueWith(action);
+        }
+
+        /// <summary>
+        /// Get start task state and set AutostartDisabled and Autostart property values;
+        /// </summary>
+        private void RefreshAutostartState()
+        {
+            GetStartupTaskAndContinue((t) =>
+            {
+                SetAutostartState(t.Result.State);
+            });
+        }
+
+        /// <summary>
+        /// Set AutostartDisabled and Autostart property view startup task state (universal app startup)
+        /// </summary>
+        /// <param name="startupTask"></param>
+        private void SetAutostartState(Windows.ApplicationModel.StartupTaskState startupTaskState)
+        {
+            AutoStartDisabled = startupTaskState == Windows.ApplicationModel.StartupTaskState.DisabledByUser ||
+                    startupTaskState == Windows.ApplicationModel.StartupTaskState.DisabledByPolicy ||
+                    startupTaskState == Windows.ApplicationModel.StartupTaskState.EnabledByPolicy;
+
+            autostart = startupTaskState == Windows.ApplicationModel.StartupTaskState.Enabled ||
+                startupTaskState == Windows.ApplicationModel.StartupTaskState.EnabledByPolicy;
+            OnPropertyChanged(nameof(Autostart));
         }
 
         #endregion private methods

@@ -56,16 +56,6 @@ namespace MousePointerReposition.Helper
             get { return ReadRegValue<int>(nameof(DisableManualCursorReposition)) == 1; }
             set { WriteRegValue<int>(nameof(DisableManualCursorReposition), value ? 1 : 0); }
         }
-
-        /// <summary>
-        /// Set Autostart entry
-        /// </summary>
-        public bool Autostart
-        {
-            get { return GetAutostart(); }
-            set { SetAutostart(value); }
-        }
-
         #endregion public properties
 
 

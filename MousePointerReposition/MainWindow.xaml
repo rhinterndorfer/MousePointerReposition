@@ -37,8 +37,42 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <metro:ToggleSwitch Grid.Row="0" Grid.Column="0" Margin="5" Header="Autostart" IsChecked="{Binding Autostart}"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="20 5 5 5" TextWrapping="Wrap" Text="Adds this programm to startup (see Task Manager Startup tab)." />
+                    <metro:ToggleSwitch Grid.Row="0" Grid.Column="0" Margin="5" Header="Autostart" IsChecked="{Binding Autostart}">
+                        <metro:ToggleSwitch.Style>
+                            <Style TargetType="{x:Type metro:ToggleSwitch}">
+                                <Setter Property="IsEnabled" Value="True" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding AutoStartDisabled}" Value="true">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </metro:ToggleSwitch.Style>
+                    </metro:ToggleSwitch>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="20 5 5 5" TextWrapping="Wrap" Text="Adds this programm to startup (see Task Manager Startup tab)." >
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Visible" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding AutoStartDisabled}" Value="true">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="20 5 5 5" TextWrapping="Wrap" Text="Startup is disabled/controlled by user or policy and can not be changed from here (see Task Manager Startup tab)." >
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding AutoStartDisabled}" Value="true">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
 
                     <metro:ToggleSwitch Grid.Row="1" Grid.Column="0" Margin="5" Header="Disable ALT+TAB" IsChecked="{Binding DisableAltTab}"/>
                     <TextBlock Grid.Row="1" Grid.Column="1" Margin="20 5 5 5" TextWrapping="Wrap" Text="Do not move mouse to center of active application window when switching applications with Alt+Tab key combination." />
