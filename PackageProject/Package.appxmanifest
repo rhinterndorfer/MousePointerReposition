@@ -5,13 +5,13 @@
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" 
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
-  IgnorableNamespaces="uap desktop rescap uap3">
+  xmlns:uap4="http://schemas.microsoft.com/appx/manifest/uap/windows10/4"
+  IgnorableNamespaces="uap desktop rescap uap4">
 
   <Identity
     Name="14885RiffRaff.MousePointerReposition"
     Publisher="CN=34937005-EB73-40CC-8146-C3CD3C24564F"
-    Version="1.0.6.0" />
+    Version="1.0.14.0" />
 
   <Properties>
     <DisplayName>MousePointerReposition</DisplayName>
@@ -42,7 +42,7 @@
         <uap:SplashScreen Image="Images\SplashScreen.png"  BackgroundColor="transparent"/>
       </uap:VisualElements>
       <Extensions>
-        <desktop:Extension Category="windows.startupTask" Executable="MousePointerReposition.exe" EntryPoint="Windows.FullTrustApplication">
+        <desktop:Extension Category="windows.startupTask" Executable="MousePointerReposition\MousePointerReposition.exe" EntryPoint="Windows.FullTrustApplication">
           <desktop:StartupTask TaskId="MousePointerRepositionStartupTask" Enabled="true" DisplayName="MousePointerReposition" />
         </desktop:Extension>
       </Extensions>
