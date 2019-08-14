@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -110,6 +111,17 @@ namespace MousePointerReposition
             {
                 showInTaskbar = value;
                 OnPropertyChanged(nameof(ShowInTaskbar));
+            }
+        }
+
+        public bool AutoStartDisabled
+        {
+            get
+            {
+                
+                // var startupTask = Windows.ApplicationModel.StartupTask.GetAsync("MousePointerRepositionStartupTask").AsTask();
+                
+                return false;
             }
         }
 
@@ -300,7 +312,16 @@ namespace MousePointerReposition
             if (!DisableWinLeftRight)
             {
                 if (e.Key == Keys.Left
-                    || e.Key == Keys.Right && e.isWinPressed && e.isShiftPressed)
+                    || e.Key == Keys.Right && e.isWinPressed) // with or without shift //&& e.isShiftPressed)
+                {
+                    TriggerMousePositioning();
+                }
+            }
+
+            // alt + tap
+            if (!DisableAltTab)
+            {
+                if (e.Key == Keys.Tab && e.isAltPressed)
                 {
                     TriggerMousePositioning();
                 }
@@ -345,15 +366,6 @@ namespace MousePointerReposition
         /// <param name="e"></param>
         private void KeyUpHook(KeyboardHookEventArgs e)
         {
-            // alt + tap
-            if (!DisableAltTab)
-            {
-                if (e.Key == Keys.Tab && e.isAltPressed)
-                {
-                    TriggerMousePositioning();
-                }
-            }
-
             // when all keys are released
             if (e.Key == Keys.None && IsMousePositioningTriggered)
             {

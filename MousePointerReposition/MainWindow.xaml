@@ -38,13 +38,13 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <metro:ToggleSwitch Grid.Row="0" Grid.Column="0" Margin="5" Header="Autostart" IsChecked="{Binding Autostart}"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="20 5 5 5" TextWrapping="Wrap" Text="Adds this programm to autostart in registry (HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run)." />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="20 5 5 5" TextWrapping="Wrap" Text="Adds this programm to startup (see Task Manager Startup tab)." />
 
                     <metro:ToggleSwitch Grid.Row="1" Grid.Column="0" Margin="5" Header="Disable ALT+TAB" IsChecked="{Binding DisableAltTab}"/>
                     <TextBlock Grid.Row="1" Grid.Column="1" Margin="20 5 5 5" TextWrapping="Wrap" Text="Do not move mouse to center of active application window when switching applications with Alt+Tab key combination." />
 
-                    <metro:ToggleSwitch Grid.Row="2" Grid.Column="0" Margin="5" Header="Disable WIN+LEFT or RIGHT" IsChecked="{Binding DisableWinLeftRight}"/>
-                    <TextBlock Grid.Row="2" Grid.Column="1" Margin="20 5 5 5" TextWrapping="Wrap" Text="Do not move mouse to center of active application window when moving windows between screens with Win+Left or Right key combination." />
+                    <metro:ToggleSwitch Grid.Row="2" Grid.Column="0" Margin="5" Header="Disable WIN+[SHIFT]+LEFT or RIGHT" IsChecked="{Binding DisableWinLeftRight}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Margin="20 5 5 5" TextWrapping="Wrap" Text="Do not move mouse to center of active application window when moving windows between screens with Win+[Shift]+Left or Right key combination." />
 
                     <metro:ToggleSwitch Grid.Row="3" Grid.Column="0" Margin="5" Header="Disable 2x CTRL" IsChecked="{Binding DisableManuelPositioning}"/>
                     <TextBlock Grid.Row="3" Grid.Column="1" Margin="20 5 5 5" TextWrapping="Wrap" Text="Do not move mouse to center of active application window when pressing Ctrl key twice." />
