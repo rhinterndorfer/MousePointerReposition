@@ -38,10 +38,12 @@ namespace MousePointerReposition
         private bool autostart;
         private RelayCommand loaded;
         private RelayCommand closing;
+        private RelayCommand exit;
         private bool? disableAltTab;
         private bool? disableWinLeftRight;
         private bool? disableManualReposition;
         private bool autoStartDisabled;
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -91,6 +93,19 @@ namespace MousePointerReposition
         }
 
         /// <summary>
+        /// Close programm
+        /// </summary>
+        public RelayCommand Exit
+        {
+            get
+            {
+                if (exit == null)
+                    exit = new RelayCommand(OnExit);
+                return exit;
+            }
+        }
+
+        /// <summary>
         /// Window state
         /// </summary>
         public WindowState WindowState
@@ -115,6 +130,8 @@ namespace MousePointerReposition
                 OnPropertyChanged(nameof(ShowInTaskbar));
             }
         }
+
+
 
 
 
@@ -215,6 +232,8 @@ namespace MousePointerReposition
             }
         }
 
+
+
         #endregion public properties
 
 
@@ -280,6 +299,14 @@ namespace MousePointerReposition
             NotifyIcon.Visible = false;
         }
 
+        /// <summary>
+        /// Exit programm
+        /// </summary>
+        /// <param name="state"></param>
+        private void OnExit(object state)
+        {
+            System.Windows.Application.Current.MainWindow.Close();
+        }
 
         /// <summary>
         /// Retries to move the mouse cursor to the center of a new active application window for a specific amount of time (CHECK_TIMEOUT).
@@ -440,8 +467,11 @@ namespace MousePointerReposition
         {
             // get foreground window
             var foregroundWindowHandle = Vanara.PInvoke.User32_Gdi.GetForegroundWindow();
-            Vanara.PInvoke.RECT windowRect;
-            Vanara.PInvoke.User32_Gdi.GetWindowRect(foregroundWindowHandle, out windowRect);
+            Vanara.PInvoke.User32_Gdi.GetWindowRect(foregroundWindowHandle, out Vanara.PInvoke.RECT windowRect);
+
+            Debug.WriteLine(String.Format("Old window: left={0} top={1} width={2} height={3}", foreGroundWindowRectStart.left, foreGroundWindowRectStart.top, foreGroundWindowRectStart.Width, foreGroundWindowRectStart.Height));
+            Debug.WriteLine(String.Format("New window: left={0} top={1} width={2} height={3}", windowRect.left, windowRect.top, windowRect.Width, windowRect.Height));
+
 
             if (foreGroundWindowRectStart.left != windowRect.left
                 || foreGroundWindowRectStart.Width != windowRect.Width
@@ -450,8 +480,9 @@ namespace MousePointerReposition
             {
                 // check if mouse position is within new active application window
                 // get current cursor position
-                System.Drawing.Point cursorPos;
-                Vanara.PInvoke.User32_Gdi.GetCursorPos(out cursorPos);
+                Vanara.PInvoke.User32_Gdi.GetCursorPos(out System.Drawing.Point cursorPos);
+
+                Debug.WriteLine(String.Format("Current cursor: x={0} y={1}", cursorPos.X, cursorPos.Y));
 
                 if (windowRect.left <= cursorPos.X
                     && windowRect.right >= cursorPos.X
@@ -462,12 +493,12 @@ namespace MousePointerReposition
                 }
                 else
                 {
-
                     int x = windowRect.left + windowRect.Width / 2;
                     int y = windowRect.top + windowRect.Height / 2;
 
-                    Vanara.PInvoke.User32_Gdi.SetCursorPos(x + 1, y + 1);
-                    Vanara.PInvoke.User32_Gdi.SetCursorPos(x, y);
+                    Debug.WriteLine(String.Format("New cursor: x={0} y={1}", x, y));
+                    Vanara.PInvoke.User32_Gdi.SetCursorPos(x + 1, y + 1); // sometimes cursor is not positioned right
+                    Vanara.PInvoke.User32_Gdi.SetCursorPos(x, y); // calling twice sets the correct postion
 
                     return true;
                 }

@@ -31,5 +31,6 @@ namespace MousePointerReposition
         {
             InitializeComponent();
         }
+        
     }
 }
