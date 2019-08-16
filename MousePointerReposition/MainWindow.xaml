@@ -29,6 +29,13 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
         <TabControl>
             <TabItem Header="Settings">
                 <Grid>
@@ -88,8 +95,6 @@
 
                     <metro:ToggleSwitch Grid.Row="3" Grid.Column="0" Margin="5" Header="Disable 2x CTRL" IsChecked="{Binding DisableManuelPositioning}"/>
                     <TextBlock Grid.Row="3" Grid.Column="1" Margin="20 5 5 5" TextWrapping="Wrap" Text="Do not move mouse to center of active application window when pressing Ctrl key twice." />
-
-                    <Button Grid.Row="4" Grid.Column="1" Margin="5" HorizontalAlignment="Right" Content="Exit" Command="{Binding Exit}" />
                 </Grid>
             </TabItem>
             <TabItem Header="Credits">
@@ -100,6 +105,10 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -139,6 +148,43 @@
                                Margin="5"
                                TextWrapping="Wrap" 
                                Text="License: https://github.com/MahApps/MahApps.Metro/blob/develop/LICENSE" />
+
+                    <TextBlock Grid.Row="3" Grid.Column="0"
+                               Margin="5"
+                               Text="ControlzEx" />
+                    <TextBlock Grid.Row="3" Grid.Column="1"
+                               Margin="5"
+                               TextWrapping="Wrap" 
+                               Text="https://github.com/ControlzEx/ControlzEx" />
+                    <TextBlock Grid.Row="3" Grid.Column="2"
+                               Margin="5"
+                               TextWrapping="Wrap" 
+                               Text="License: https://github.com/ControlzEx/ControlzEx/blob/develop/LICENSE" />
+
+                    <TextBlock Grid.Row="4" Grid.Column="0"
+                               Margin="5"
+                               Text="Theraot" />
+                    <TextBlock Grid.Row="4" Grid.Column="1"
+                               Margin="5"
+                               TextWrapping="Wrap" 
+                               Text="https://github.com/theraot/Theraot/" />
+                    <TextBlock Grid.Row="4" Grid.Column="2"
+                               Margin="5"
+                               TextWrapping="Wrap" 
+                               Text="License: https://github.com/theraot/Theraot/blob/master/LICENSE.txt" />
+
+                    <TextBlock Grid.Row="5" Grid.Column="0"
+                               Margin="5"
+                               Text="RelayCommand" />
+                    <TextBlock Grid.Row="5" Grid.Column="1"
+                               Margin="5"
+                               TextWrapping="Wrap" 
+                               Text="https://msdn.microsoft.com/en-us/magazine/dd419663.aspx" />
+                    <TextBlock Grid.Row="5" Grid.Column="2"
+                               Margin="5"
+                               TextWrapping="Wrap" 
+                               Text="" />
+
                 </Grid>
             </TabItem>
             <TabItem Header="Contact">
@@ -165,13 +211,21 @@
                         <TextBlock Margin="5"
                                    TextWrapping="Wrap" 
                                    Text="e-Mail: dev@rammelhof.at" />
-                        
+
                         <TextBlock Margin="5"
                                    TextWrapping="Wrap" 
-                                   Text="Constructive feedback welcome" />
+                                   Text="Sourcecode: https://github.com/rhinterndorfer/MousePointerReposition" />
+
+                        <TextBlock Margin="5"
+                                   TextWrapping="Wrap" 
+                                   Text="Constructive feedback is welcome" />
                     </StackPanel>
                 </Grid>
             </TabItem>
         </TabControl>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Margin="5" HorizontalAlignment="Right" IsDefault="True" IsCancel="True" Content="Hide" Command="{Binding Hide}" />
+            <Button Margin="5" HorizontalAlignment="Right" Content="Exit" Command="{Binding Exit}" />
+        </StackPanel>
     </Grid>
 </metro:MetroWindow>

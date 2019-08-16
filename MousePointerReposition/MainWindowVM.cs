@@ -39,6 +39,7 @@ namespace MousePointerReposition
         private RelayCommand loaded;
         private RelayCommand closing;
         private RelayCommand exit;
+        private RelayCommand hide;
         private bool? disableAltTab;
         private bool? disableWinLeftRight;
         private bool? disableManualReposition;
@@ -102,6 +103,19 @@ namespace MousePointerReposition
                 if (exit == null)
                     exit = new RelayCommand(OnExit);
                 return exit;
+            }
+        }
+
+        /// <summary>
+        /// Hide window
+        /// </summary>
+        public RelayCommand Hide
+        {
+            get
+            {
+                if (hide == null)
+                    hide = new RelayCommand(OnHide);
+                return hide;
             }
         }
 
@@ -232,8 +246,6 @@ namespace MousePointerReposition
             }
         }
 
-
-
         #endregion public properties
 
 
@@ -309,6 +321,16 @@ namespace MousePointerReposition
         }
 
         /// <summary>
+        /// Hide window
+        /// </summary>
+        /// <param name="state"></param>
+        private void OnHide(object state)
+        {
+            WindowState = WindowState.Minimized;
+            ShowInTaskbar = false;
+        }
+
+        /// <summary>
         /// Retries to move the mouse cursor to the center of a new active application window for a specific amount of time (CHECK_TIMEOUT).
         /// </summary>
         /// <param name="sender"></param>
@@ -342,6 +364,7 @@ namespace MousePointerReposition
             {
                 WindowState = WindowState.Normal;
                 ShowInTaskbar = true;
+                System.Windows.Application.Current.MainWindow.Focus();
             }
         }
 
@@ -386,7 +409,7 @@ namespace MousePointerReposition
                     {
                         if ((DateTime.Now - CtrlKeyPressLast).TotalMilliseconds <= CTRL_KEY_TIMEOUT)
                         {
-                            IsManualMousePositioningTriggered = true;
+                            TriggerManualMousePositioning();
                         }
                         else
                         {
@@ -434,12 +457,27 @@ namespace MousePointerReposition
         /// </summary>
         private void TriggerMousePositioning()
         {
+            RepositioningTimer.Stop(); // stop currently executing repositioning
             IsMousePositioningTriggered = true;
 
             // save current foreground window rectangle
             var foregroundWindowHandleStart = Vanara.PInvoke.User32_Gdi.GetForegroundWindow();
             foreGroundWindowRectStart = new Vanara.PInvoke.RECT();
             Vanara.PInvoke.User32_Gdi.GetWindowRect(foregroundWindowHandleStart, out foreGroundWindowRectStart);
+        }
+
+
+        /// <summary>
+        /// Called when key combination for manual cursor repositioning is detected.
+        /// Stores current foreground window geometry.
+        /// </summary>
+        private void TriggerManualMousePositioning()
+        {
+            RepositioningTimer.Stop(); // stop currently executing repositioning
+            IsManualMousePositioningTriggered = true;
+
+            // save empty current foreground window rectangle
+            foreGroundWindowRectStart = new Vanara.PInvoke.RECT();
         }
 
 
