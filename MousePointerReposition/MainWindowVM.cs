@@ -1,4 +1,5 @@
 ﻿using FMUtils.KeyboardHook;
+using Microsoft.Win32;
 using MousePointerReposition.Helper;
 using MousePointerReposition.ViewModel;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -173,6 +175,7 @@ namespace MousePointerReposition
                 {
                     autostart = value;
 
+#if _UWP
                     var startupTask = GetStartupTask();
                     if (value)
                     {
@@ -182,7 +185,19 @@ namespace MousePointerReposition
                     }
                     else
                         startupTask.Disable();
-
+#else
+                    RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                    if (value)
+                    {
+                        string assemblyPath = Assembly.GetExecutingAssembly().Location;
+                        rkApp.SetValue("MousePointerReposition", assemblyPath, RegistryValueKind.String);
+                    }
+                    else
+                    {
+                        rkApp.DeleteValue("MousePointerReposition");
+                    }
+                    
+#endif
                     OnPropertyChanged(nameof(Autostart));
                 }
             }
@@ -272,6 +287,7 @@ namespace MousePointerReposition
             // check autostart task state
             AutoStartDisabled = true;
             RefreshAutostartState();
+
         }
 
         #endregion .ctor
@@ -557,6 +573,7 @@ namespace MousePointerReposition
             return task.Result;
         }
 
+#if _UWP
         /// <summary>
         /// Get windows universal app startup task.
         /// </summary>
@@ -565,7 +582,7 @@ namespace MousePointerReposition
             var task = Windows.ApplicationModel.StartupTask.GetAsync("MousePointerRepositionStartupTask").AsTask();
             task.ContinueWith(action);
         }
-
+    
         /// <summary>
         /// Get start task state and set AutostartDisabled and Autostart property values;
         /// </summary>
@@ -591,6 +608,28 @@ namespace MousePointerReposition
                 startupTaskState == Windows.ApplicationModel.StartupTaskState.EnabledByPolicy;
             OnPropertyChanged(nameof(Autostart));
         }
+#else
+        /// <summary>
+        /// Get start task state and set AutostartDisabled and Autostart property values;
+        /// </summary>
+        private void RefreshAutostartState()
+        {
+            AutoStartDisabled = false;
+
+            RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            string appPath = rkApp.GetValue("MousePointerReposition")?.ToString();
+            string assemblyPath = Assembly.GetExecutingAssembly().Location;
+            if (appPath == null || !assemblyPath.Equals(appPath))
+            {
+                autostart = false;
+            }
+            else
+            {
+                autostart = true;
+            }
+            OnPropertyChanged(nameof(Autostart));
+        }
+#endif
 
         #endregion private methods
 
