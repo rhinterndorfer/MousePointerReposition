@@ -15,12 +15,27 @@ namespace MousePointerReposition
     /// </summary>
     public partial class App : Application
     {
+        public static LoggingLevelSwitch loggingLevelSwitch;
         public static Logger logger;
 
         public App()
         {
+            string appFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MousePointerReposition");
+            string appLogFolder = Path.Combine(appFolder, "Logs");
+
+            if(!Directory.Exists(appLogFolder))
+                Directory.CreateDirectory(appLogFolder);
+
+
+            loggingLevelSwitch = new LoggingLevelSwitch();
+            loggingLevelSwitch.MinimumLevel = Serilog.Events.LogEventLevel.Information;
+
+            if (File.Exists(Path.Combine(appFolder, "debug.txt")))
+                loggingLevelSwitch.MinimumLevel = Serilog.Events.LogEventLevel.Debug;
+
             logger = new LoggerConfiguration()
-                  .WriteTo.File(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) ,"MousePointerReposition.log.txt"))
+                .MinimumLevel.ControlledBy(loggingLevelSwitch)
+                .WriteTo.File(Path.Combine(appLogFolder, "MousePointerReposition.log.txt"), rollingInterval: RollingInterval.Day)
                   .CreateLogger();
         }
 

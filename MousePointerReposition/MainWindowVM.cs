@@ -274,7 +274,7 @@ namespace MousePointerReposition
         /// </summary>
         public MainWindowVM()
         {
-            App.logger.Information("MainWindowVM entry");
+            App.logger.Debug("MainWindowVM entry");
 
             WindowState = WindowState.Minimized;
             ShowInTaskbar = true;
@@ -293,7 +293,7 @@ namespace MousePointerReposition
             AutoStartDisabled = true;
             RefreshAutostartState();
 
-            App.logger.Information("MainWindowVM exit");
+            App.logger.Debug("MainWindowVM exit");
         }
 
         #endregion .ctor
@@ -306,9 +306,9 @@ namespace MousePointerReposition
         /// <param name="state"></param>
         private void OnLoaded(object state)
         {
-            App.logger.Information("OnLoaded entry");
+            App.logger.Debug("OnLoaded entry");
             // notifyIcon
-            App.logger.Information("NotifyIcon init");
+            App.logger.Debug("NotifyIcon init");
             NotifyIcon = new NotifyIcon();
 
             System.IO.Stream iconStream = this.GetType().Assembly.GetManifestResourceStream("MousePointerReposition.Icons.mouse_gray.ico");
@@ -316,7 +316,7 @@ namespace MousePointerReposition
             NotifyIcon.Icon = new System.Drawing.Icon(iconStream);
             NotifyIcon.Visible = true;
             NotifyIcon.Click += NotifyIcon_Click;
-            App.logger.Information("NotifyIcon done");
+            App.logger.Debug("NotifyIcon done");
 
 
             // use background dispatcher
@@ -327,7 +327,7 @@ namespace MousePointerReposition
                     }),
                 System.Windows.Threading.DispatcherPriority.Background);
 
-            App.logger.Information("OnLoaded exit");
+            App.logger.Debug("OnLoaded exit");
         }
 
         /// <summary>
@@ -336,7 +336,7 @@ namespace MousePointerReposition
         /// <param name="state"></param>
         private void OnClosing(object state)
         {
-            App.logger.Information("OnClosing");
+            App.logger.Debug("OnClosing");
             NotifyIcon.Visible = false;
         }
 
@@ -346,7 +346,7 @@ namespace MousePointerReposition
         /// <param name="state"></param>
         private void OnExit(object state)
         {
-            App.logger.Information("OnExit");
+            App.logger.Debug("OnExit");
             System.Windows.Application.Current.MainWindow.Close();
         }
 
@@ -356,7 +356,7 @@ namespace MousePointerReposition
         /// <param name="state"></param>
         private void OnHide(object state)
         {
-            App.logger.Information("OnHide");
+            App.logger.Debug("OnHide");
             WindowState = WindowState.Minimized;
             ShowInTaskbar = false;
         }
@@ -386,7 +386,7 @@ namespace MousePointerReposition
         /// <param name="e"></param>
         private void NotifyIcon_Click(object sender, EventArgs e)
         {
-            App.logger.Information("NotifyIcon_Click");
+            App.logger.Debug("NotifyIcon_Click");
             if (WindowState != WindowState.Minimized)
             {
                 WindowState = WindowState.Minimized;
@@ -407,14 +407,14 @@ namespace MousePointerReposition
         /// <param name="e"></param>
         private void KeyDownHook(KeyboardHookEventArgs e)
         {
-            App.logger.Information("KeyDownHook entry");
+            App.logger.Debug("KeyDownHook entry");
             // win + shift + left or right key
             if (!DisableWinLeftRight)
             {
                 if (e.Key == Keys.Left
                     || e.Key == Keys.Right && e.isWinPressed) // with or without shift //&& e.isShiftPressed)
                 {
-                    App.logger.Information("Win+Left or Win+Right");
+                    App.logger.Debug("Win+Left or Win+Right");
                     TriggerMousePositioning();
                 }
             }
@@ -424,7 +424,7 @@ namespace MousePointerReposition
             {
                 if (e.Key == Keys.Tab && e.isAltPressed)
                 {
-                    App.logger.Information("Alt+Tab");
+                    App.logger.Debug("Alt+Tab");
                     TriggerMousePositioning();
                 }
             }
@@ -433,7 +433,7 @@ namespace MousePointerReposition
             {
                 if (e.isCtrlPressed && e.Key == Keys.None)
                 {
-                    App.logger.Information("Ctrl pressed");
+                    App.logger.Debug("Ctrl pressed");
                     CtrlKeyPressCounter++;
 
                     if (CtrlKeyPressCounter == 1)
@@ -445,7 +445,7 @@ namespace MousePointerReposition
 
                     if (CtrlKeyPressCounter >= 2)
                     {
-                        App.logger.Information("2xCtrl");
+                        App.logger.Debug("2xCtrl");
                         if ((DateTime.Now - CtrlKeyPressLast).TotalMilliseconds <= CTRL_KEY_TIMEOUT)
                         {
                             TriggerManualMousePositioning();
@@ -465,7 +465,7 @@ namespace MousePointerReposition
                 }
             }
 
-            App.logger.Information("KeyDownHook exit");
+            App.logger.Debug("KeyDownHook exit");
         }
 
         /// <summary>
@@ -474,7 +474,7 @@ namespace MousePointerReposition
         /// <param name="e"></param>
         private void KeyUpHook(KeyboardHookEventArgs e)
         {
-            App.logger.Information("KeyUpHook entry");
+            App.logger.Debug("KeyUpHook entry");
             // when all keys are released
             if (e.Key == Keys.None && IsMousePositioningTriggered)
             {
@@ -490,7 +490,7 @@ namespace MousePointerReposition
                     ExecuteMousePositioning();
                 }
             }
-            App.logger.Information("KeyUpHook exit");
+            App.logger.Debug("KeyUpHook exit");
         }
 
 
@@ -500,7 +500,7 @@ namespace MousePointerReposition
         /// </summary>
         private void TriggerMousePositioning()
         {
-            App.logger.Information("TriggerMousePositioning enter");
+            App.logger.Debug("TriggerMousePositioning enter");
             RepositioningTimer.Stop(); // stop currently executing repositioning
             IsMousePositioningTriggered = true;
 
@@ -508,7 +508,7 @@ namespace MousePointerReposition
             var foregroundWindowHandleStart = Vanara.PInvoke.User32.GetForegroundWindow();
             foreGroundWindowRectStart = new Vanara.PInvoke.RECT();
             Vanara.PInvoke.User32.GetWindowRect(foregroundWindowHandleStart, out foreGroundWindowRectStart);
-            App.logger.Information("TriggerMousePositioning exit");
+            App.logger.Debug("TriggerMousePositioning exit");
         }
 
 
@@ -518,13 +518,13 @@ namespace MousePointerReposition
         /// </summary>
         private void TriggerManualMousePositioning()
         {
-            App.logger.Information("TriggerManualMousePositioning start");
+            App.logger.Debug("TriggerManualMousePositioning start");
             RepositioningTimer.Stop(); // stop currently executing repositioning
             IsManualMousePositioningTriggered = true;
 
             // save empty current foreground window rectangle
             foreGroundWindowRectStart = new Vanara.PInvoke.RECT();
-            App.logger.Information("TriggerManualMousePositioning exit");
+            App.logger.Debug("TriggerManualMousePositioning exit");
         }
 
 
@@ -533,13 +533,13 @@ namespace MousePointerReposition
         /// </summary>
         private void ExecuteMousePositioning()
         {
-            App.logger.Information("ExecuteMousePositioning start");
+            App.logger.Debug("ExecuteMousePositioning start");
             IsMousePositioningTriggered = false;
 
             CheckPeriod = 0;
             // start timer that checks active window change (rectangle change)
             RepositioningTimer.Start();
-            App.logger.Information("ExecuteMousePositioning end");
+            App.logger.Debug("ExecuteMousePositioning end");
         }
 
 
@@ -552,13 +552,13 @@ namespace MousePointerReposition
         /// <returns></returns>
         private bool TryMouseRepositioning()
         {
-            App.logger.Information("TryMouseRepositioning start");
+            App.logger.Debug("TryMouseRepositioning start");
             // get foreground window
             var foregroundWindowHandle = Vanara.PInvoke.User32.GetForegroundWindow();
             Vanara.PInvoke.User32.GetWindowRect(foregroundWindowHandle, out Vanara.PInvoke.RECT windowRect);
 
-            App.logger.Information(String.Format("Old window: left={0} top={1} width={2} height={3}", foreGroundWindowRectStart.left, foreGroundWindowRectStart.top, foreGroundWindowRectStart.Width, foreGroundWindowRectStart.Height));
-            App.logger.Information(String.Format("New window: left={0} top={1} width={2} height={3}", windowRect.left, windowRect.top, windowRect.Width, windowRect.Height));
+            App.logger.Debug(String.Format("Old window: left={0} top={1} width={2} height={3}", foreGroundWindowRectStart.left, foreGroundWindowRectStart.top, foreGroundWindowRectStart.Width, foreGroundWindowRectStart.Height));
+            App.logger.Debug(String.Format("New window: left={0} top={1} width={2} height={3}", windowRect.left, windowRect.top, windowRect.Width, windowRect.Height));
 
 
             if (foreGroundWindowRectStart.left != windowRect.left
@@ -570,7 +570,7 @@ namespace MousePointerReposition
                 // get current cursor position
                 Vanara.PInvoke.User32.GetCursorPos(out System.Drawing.Point cursorPos);
 
-                App.logger.Information(String.Format("Current cursor: x={0} y={1}", cursorPos.X, cursorPos.Y));
+                App.logger.Debug(String.Format("Current cursor: x={0} y={1}", cursorPos.X, cursorPos.Y));
 
                 if (windowRect.left <= cursorPos.X
                     && windowRect.right >= cursorPos.X
@@ -588,13 +588,13 @@ namespace MousePointerReposition
                     Vanara.PInvoke.User32.SetCursorPos(x + 1, y + 1); // sometimes cursor is not positioned right
                     Vanara.PInvoke.User32.SetCursorPos(x, y); // calling twice sets the correct postion
 
-                    App.logger.Information("TryMouseRepositioning end");
+                    App.logger.Debug("TryMouseRepositioning end");
                     return true;
                 }
             }
             else
             {
-                App.logger.Information("TryMouseRepositioning end");
+                App.logger.Debug("TryMouseRepositioning end");
                 return false;
             }
                 
